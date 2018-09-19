@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EmpMapper">
+	<resultMap type="Emp" id="empMap">
+		<id column="empid" property="empid"/>
+		<association property="dept" column="deptid" select="DeptMapper.selectById"></association>
+	</resultMap>
+	<resultMap type="Emp" id="empMapJoin">
+		<id column="empid" property="empid"/>
+		<association property="dept" javaType="Dept">
+			<id column="dname" property="deptname"/>
+			<id column="dinfo" property="deptinfo"/>
+		</association>
+	</resultMap>
+	
+	<select id="selectAll" resultType="empMap">
+		select * from emp order by empid desc
+	</select>
+	<select id="selectByPage" parameterMap="map" resultType="empMap">
+		select * from emp order by empid desc limit #{startindex},#{pagesize}
+	</select>
+	<select id="selectByWhere" parameterMap="Emp" resultType="empMap">
+		select * from emp
+		where
+		<if test="_parameter">
+			<if test="dept!=null">
+				<if test="dept.deptid!=0">
+					and deptid=#{dept.id}
+				</if>
+			</if>
+			<if test="empname!=nulla and empname!=''">
+				and empname like #{empname}
+			</if>
+		</if>
+	</select>
+	<select id="selectByWherePage" parameterMap="map" resultType="empMap">
+		select * from emp
+		<where>
+			<if test="_parameter">
+				<if test="emp.dept!=null">
+					<if test="emp.dept.deptid!=0">
+						and deptid=#{emp.dept.id}
+					</if>
+				</if>
+				<if test="emp.empname!=null and emp.empname!=''">
+					and empname like '%${emp.empname}%'
+				</if>
+			</if>
+		</where>
+		order by empid desc
+		limit #{startindex},#{pagesize}
+	</select>
+	<select id="selectAllJoin" resultType="empMapJoin">
+		select emp.*,dept.dname,dept.dinfo
+		from emp left join dept on emp.deptid=dept.deptid
+	</select>
+	<select id="selectByName" parameterType="string" resultType="empMap">
+		select * from emp where empname=#{_parameter}
+	</select>
+	<select id="selectById" parameterType="int" resultType="empMap">
+		select * from emp where empid=#{_parameter}
+	</select>
+	<insert id="insertEmp" parameterType="Emp">
+		insert into emp(empname,deptid,email,joindate)
+		values(#{empname},#{dept.deptid},#{email},#{joindate})
+	</insert>
+	<update id="updateEmp" parameterType="Emp">
+		update emp set empname=#{empname},deptid=#{dept.deptid},email=#{email},joindate=#{joindate}
+		values(#{empname},#{dept.deptid},#{email},#{joindate})
+		where empid=#{empid}
+	</update>
+	<delete id="deleteEmp" parameterType="int">
+		delete from emp where empid=#{_parameter}
+	</delete>
+	<delete id="delMany">
+		delete from emp where empid in
+		<foreach index="index" item="item" collection="list" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	<insert id="insertDept" parameterType="Dept">
+		insert into dept(deptname,deptinfo) values (#{deptname},#{deptinfo})
+	</insert>
+	<update id="updateDept" parameterType="Dept">
+		update dept set deptname=${deptname}, dpetindo=${deptinfo} 
+	</update>
+</mapper> 

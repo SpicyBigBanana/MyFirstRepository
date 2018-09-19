@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="AdminMapper">
+  	<select id="selectAll" resultType="com.stusys162.pojo.Admininfo">
+  		select * from admininfo order by adminid desc
+  	</select>
+  	
+  	<select id="selectAll" parameterType="string" resultType="com.stusys162.pojo.Admininfo">
+  		select * from admininfo order by adminid desc
+  	</select>
+  	
+  	<insert id="insertAdmin"  parameterType="com.stusys162.pojo.Admininfo">
+  		insert into admininfo
+  		(username, password, realname)
+  		values(#{username},#{password},#{realname})
+  	</insert>
+  	
+  	<update id="updateAdmin" parameterType="com.stusys162.pojo.Admininfo">
+  		update admininfo
+  		set password = #{password},realname=#{realname}
+  		where adminid=#{adminid}
+  	</update>
+  	
+  	<delete id="delAdminById" parameterType="int">
+  		delete from admininfo where adminid=#{_parameter}
+  	</delete>
+  </mapper>
